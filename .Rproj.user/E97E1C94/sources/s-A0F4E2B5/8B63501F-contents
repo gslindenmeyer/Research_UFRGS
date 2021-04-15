@@ -1,39 +1,44 @@
 rm(list=ls())
 require(mboost)
 require(forecast)
-require(zoo)
 source('functions.R')
 
 #set.seed(2506)
-yt = array(dim = 500) ## Criação do vetor 1 linear
 t = 500
+yt = array(dim = t) ## Criação do vetor 1 linear
 yt[c(1,2,3)] = rnorm(3, mean = 0, sd = 0.01)
 for(i in 4:t){
 yt[i] = 0.21*yt[i-1] + 0.35*yt[i-2] + 0.17*yt[i-3] + 0.1*rnorm(1, mean = 0, sd = 0.1)
     
 }
 
-yt2 = array(dim = 500) ## Criação do vetor 2 não linear
-t = 500
+yt2 = array(dim = t) ## Criação do vetor 2 não linear
 yt2[c(1)] = rnorm(1, mean = 0, sd = 0.25)
 for(i in 2:t){
   yt2[i] = 0.4*(5-yt2[i-1]^2)/(1+yt2[i-1]^2)+rnorm(1, mean = 0, sd = 0.5)
 
 }
 
-for(i in 1:12){
-  modelo_1 = linear_model(yt=yt,h=1, p=1,ratio = 0.603)
-}
-modelo_1 = linear_model(yt=yt,h=1, p=1,ratio = 0.603)
+modelo_1 = linear_model(yt=yt,h=1, p=12, n_out = 200)
 plot.ts(modelo_1$y_filtered)
 lines(modelo_1$y_hat, col ='red')
-modelo_1$r2
+modelo_1$r2 #0.3979414
 
-modelo_2 = linear_model(yt=yt2,h=1, p=1,ratio = 0.603)
+modelo_2 = linear_model(yt=yt2,h=1, p=12, n_out=200) 
 plot.ts(modelo_2$y_filtered)
 lines(modelo_2$y_hat, col ='red')
-modelo_2$r2
+modelo_2$r2 #0.5369995
 
+vetor_dalers = c()
+for(i in 1:12){
+  modelo_1 = linear_model(yt=yt,h=i, p=12, n_out = 200)
+  if(modelo_1$r2 > 0){
+    x = modelo_1$r2  
+  } else{
+    x = 0
+  }
+  
+  vetor_dalers = c(vetor_dalers, x)
+}
 
-
-
+plot(x = vetor_dalers, ylab = "R²", xlab = 'h')

@@ -1,4 +1,4 @@
-linear_model = function(yt, xt, h, p, ratio){
+linear_model = function(yt, xt, h, p, n_out=200){
   ## xt nao faz nada ainda
   
   df = data.frame(lag_1 = NA, lag_2=NA, lag_3 = NA, lag_4 = NA, lag_5 = NA, lag_6=NA, 
@@ -22,7 +22,7 @@ linear_model = function(yt, xt, h, p, ratio){
   ytp <- tail(yt,-p)
   
   n_tot <- length(ytp)
-  n_out <- ceiling(n_tot - ratio*n_tot)
+  #n_out <- ceiling(n_tot - ratio*n_tot)
   ind_out <- seq(to = n_tot, by = 1, length = n_out)
   Y_predicted = c()
   data <- cbind(y_reg = ytp, df)
@@ -30,16 +30,21 @@ linear_model = function(yt, xt, h, p, ratio){
     ind_in <- seq(from = 1, to = ind_out[i] - h, by = 1)
     if(p>1){
       x_reg <- data[ind_in,colnames(df)] # x independent t = 1, ..., T.in-h
-      x0_reg <- data[ind_out[i],colnames(df)]
+      x0_reg <- data[(ind_out[i]-h+1),colnames(df)]
     } 
     else { 
       x_reg <- data.frame(lag_1=data[ind_in,colnames(df)])
-      x0_reg <- data.frame(lag_1=data[ind_out[i],colnames(df)])
-      row.names(x0_reg) <- ind_out[i]
+      x0_reg <- data.frame(lag_1=data[(ind_out[i]-h+1),colnames(df)])
+      row.names(x0_reg) <- (ind_out[i]-h+1)
     }
-    for(j in 1:h) {
+    for(j in 1:1) {
       # expanding window
-      y_dep <- ytp[ind_in] #[tail(ind_in,-(h))]
+      if(h>1){
+        y_dep <- ytp[tail((h-1):(length(ind_in)+h-1),-j)] #ytp[ind_in] #[tail(ind_in,-(h))]  
+      }else{
+        y_dep <- ytp[ind_in] #ytp[ind_in] #[tail(ind_in,-(h))]
+      }
+      
       data2 <- as.data.frame(cbind(y_reg = y_dep, x_reg)) 
       #y_reg <- as.matrix(y_dep)
       # finding m*
@@ -55,7 +60,8 @@ linear_model = function(yt, xt, h, p, ratio){
   mse <- mean((tail(ytp,length(Y_predicted))-Y_predicted)^2)
   varxt <- var(tail(ytp,length(Y_predicted)))
   
-  results_list <- list('y_hat' = Y_predicted,'y_filtered' = tail(ytp,length(Y_predicted)),
+  results_list <- list('y_hat' = Y_predicted,
+                       'y_filtered' = tail(ytp,length(Y_predicted)),
                        'mse' = mse,
                        'varxt'= varxt,
                        'r2' = 1-mse/varxt)

@@ -5,14 +5,14 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "3155181981",
+    "hash" : "0",
     "id" : "8B63501F",
-    "lastKnownWriteTime" : 1618522617,
-    "last_content_update" : 1618522617484,
+    "lastKnownWriteTime" : 1618529370,
+    "last_content_update" : 1618529370175,
     "path" : "~/GitHub/Research_UFRGS/main.R",
     "project_path" : "main.R",
     "properties" : {
-        "cursorPosition" : "24,55",
+        "cursorPosition" : "16,0",
         "scrollLine" : "0"
     },
     "read_only" : false,
