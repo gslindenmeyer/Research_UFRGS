@@ -4,7 +4,7 @@ require(forecast)
 require(zoo)
 source('functions.R')
 
-set.seed(2506)
+#set.seed(2506)
 yt = array(dim = 500) ## Criação do vetor 1 linear
 t = 500
 yt[c(1,2,3)] = rnorm(3, mean = 0, sd = 0.01)
@@ -12,7 +12,6 @@ for(i in 4:t){
 yt[i] = 0.21*yt[i-1] + 0.35*yt[i-2] + 0.17*yt[i-3] + 0.1*rnorm(1, mean = 0, sd = 0.1)
     
 }
-plot.ts(yt)
 
 yt2 = array(dim = 500) ## Criação do vetor 2 não linear
 t = 500
@@ -21,9 +20,10 @@ for(i in 2:t){
   yt2[i] = 0.4*(5-yt2[i-1]^2)/(1+yt2[i-1]^2)+rnorm(1, mean = 0, sd = 0.5)
 
 }
-plot.ts(yt2)
 
-
+for(i in 1:12){
+  modelo_1 = linear_model(yt=yt,h=1, p=1,ratio = 0.603)
+}
 modelo_1 = linear_model(yt=yt,h=1, p=1,ratio = 0.603)
 plot.ts(modelo_1$y_filtered)
 lines(modelo_1$y_hat, col ='red')

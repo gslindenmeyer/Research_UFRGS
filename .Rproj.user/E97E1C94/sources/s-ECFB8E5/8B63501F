@@ -5,15 +5,15 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "0",
+    "hash" : "3155181981",
     "id" : "8B63501F",
-    "lastKnownWriteTime" : 1618522115,
-    "last_content_update" : 1618522115474,
+    "lastKnownWriteTime" : 1618522617,
+    "last_content_update" : 1618522617484,
     "path" : "~/GitHub/Research_UFRGS/main.R",
     "project_path" : "main.R",
     "properties" : {
-        "cursorPosition" : "23,12",
-        "scrollLine" : "8"
+        "cursorPosition" : "24,55",
+        "scrollLine" : "0"
     },
     "read_only" : false,
     "read_only_alternatives" : [
