@@ -4,8 +4,8 @@ require(R.matlab)
 require(forecast)
 require(sandwich)
 data<-readMat('FRED.mat')
-
-fileprefix='FRED_MSW'
+dalers <- readMat('FREDTests/FRED_MSW_recursive_stationary_1959_1999_204_2(W875RX1).mat')
+dafileprefix='FRED_MSW'
 source("helper_functions.R")
 
 ##############
