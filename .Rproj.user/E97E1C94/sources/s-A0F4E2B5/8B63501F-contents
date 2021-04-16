@@ -31,14 +31,9 @@ modelo_2$r2 #0.5369995
 
 vetor_dalers = c()
 for(i in 1:12){
-  modelo_1 = linear_model(yt=yt,h=i, p=12, n_out = 200)
-  if(modelo_1$r2 > 0){
-    x = modelo_1$r2  
-  } else{
-    x = 0
-  }
-  
+  modelo_1 = linear_model(yt=yt2,h=i, p=12, n_out = 200)
+  x=ifelse(modelo_1$r2 > 0,modelo_1$r2,0)
   vetor_dalers = c(vetor_dalers, x)
 }
 
-plot(x = vetor_dalers, ylab = "R²", xlab = 'h')
+plot(x = vetor_dalers, ylab = "R²", xlab = 'h', ylim = c(0,1))

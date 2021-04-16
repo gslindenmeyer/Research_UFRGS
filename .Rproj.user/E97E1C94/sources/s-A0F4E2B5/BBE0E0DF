@@ -1,24 +1,24 @@
 {
     "collab_server" : "",
     "contents" : "",
-    "created" : 1618519980584.000,
+    "created" : 1618532013118.000,
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
     "hash" : "0",
-    "id" : "8B63501F",
-    "lastKnownWriteTime" : 1618529370,
-    "last_content_update" : 1618529370175,
+    "id" : "BBE0E0DF",
+    "lastKnownWriteTime" : 1618531935,
+    "last_content_update" : 1618531935,
     "path" : "~/GitHub/Research_UFRGS/main.R",
     "project_path" : "main.R",
     "properties" : {
-        "cursorPosition" : "16,0",
-        "scrollLine" : "0"
+        "cursorPosition" : "8,35",
+        "scrollLine" : "8"
     },
     "read_only" : false,
     "read_only_alternatives" : [
     ],
-    "relative_order" : 1,
+    "relative_order" : 3,
     "source_on_save" : false,
     "source_window" : "",
     "type" : "r_source"
