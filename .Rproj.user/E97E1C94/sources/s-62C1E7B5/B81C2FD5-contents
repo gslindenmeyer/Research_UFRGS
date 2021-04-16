@@ -25,6 +25,7 @@ linear_model = function(yt, xt, h, p, n_out=200){
   #n_out <- ceiling(n_tot - ratio*n_tot)
   ind_out <- seq(to = n_tot, by = 1, length = n_out)
   Y_predicted = c()
+  aic_predicted = c()
   data <- cbind(y_reg = ytp, df)
   for(i in 1:n_out){
     ind_in <- seq(from = 1, to = ind_out[i] - h, by = 1)
@@ -51,7 +52,7 @@ linear_model = function(yt, xt, h, p, n_out=200){
       model_1 = lm(y_reg ~., data=data2)
       y_predicted = predict(model_1, newdata=x0_reg)
       # visualizing selected predictors varimp
-      
+      aic_predicted = c(aic_predicted, AIC(model_1))
       #y_extra = append(y_extra, y_predicted)
     }
     Y_predicted = append(Y_predicted, y_predicted)
@@ -64,7 +65,18 @@ linear_model = function(yt, xt, h, p, n_out=200){
                        'y_filtered' = tail(ytp,length(Y_predicted)),
                        'mse' = mse,
                        'varxt'= varxt,
-                       'r2' = 1-mse/varxt)
+                       'r2' = 1-mse/varxt,
+                       'aic' = aic_predicted)
   return(results_list)
 }
 
+catch_r2 = function(yt, h_max = 12, p_out=12, n_out_out=200){
+  vetor_h = c()
+  for(i in 1:h_max){
+    model <- linear_model(yt, h=i,p=p_out, n_out = n_out_out)
+    x = ifelse(model$r2 > 0, model$r2,0)
+    vetor_h = c(vetor_h, x)
+  }
+  a = list('vetor_h' = vetor_h, 'h'=h_max, 'lag' = p_out, 'n_predictions' = n_out_out)
+  return(a)
+}

@@ -5,20 +5,20 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "0",
+    "hash" : "1065553448",
     "id" : "BBE0E0DF",
-    "lastKnownWriteTime" : 1618531935,
-    "last_content_update" : 1618531935,
+    "lastKnownWriteTime" : 1618584339,
+    "last_content_update" : 1618584339178,
     "path" : "~/GitHub/Research_UFRGS/main.R",
     "project_path" : "main.R",
     "properties" : {
-        "cursorPosition" : "8,35",
-        "scrollLine" : "8"
+        "cursorPosition" : "29,0",
+        "scrollLine" : "0"
     },
     "read_only" : false,
     "read_only_alternatives" : [
     ],
-    "relative_order" : 3,
+    "relative_order" : 1,
     "source_on_save" : false,
     "source_window" : "",
     "type" : "r_source"
