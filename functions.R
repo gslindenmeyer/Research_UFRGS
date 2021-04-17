@@ -70,13 +70,13 @@ linear_model = function(yt, xt, h, p, n_out=200){
   return(results_list)
 }
 
-catch_r2 = function(yt, h_max = 12, p_out=12, n_out_out=200){
+catch_r2 = function(yt, h_max = 12, p_out=12, n_out_out=200,name = NULL){
   vetor_h = c()
   for(i in 1:h_max){
     model <- linear_model(yt, h=i,p=p_out, n_out = n_out_out)
     x = ifelse(model$r2 > 0, model$r2,0)
     vetor_h = c(vetor_h, x)
   }
-  a = list('vetor_h' = vetor_h, 'h'=h_max, 'lag' = p_out, 'n_predictions' = n_out_out)
+  a = list('vetor_h' = vetor_h, 'h'=1:h_max, 'lag' = p_out, 'n_predictions' = n_out_out, 'name' = name)
   return(a)
 }

@@ -4,7 +4,7 @@ t = 500
 yta = array(dim = t) ## Criação do vetor 1 linear
 yta[c(1)] = rnorm(1, mean = 0, sd = 0.5)
 for(i in 2:t){
-  yta[i] = ifelse(yta[i-1]<=0.5,-0.5*yta[i-1],0) + ifelse(yta[i-1]>0.5,0.9*yta[i-1],0) + 0.5*rnorm(1, mean = 0, sd = 0.5)
+  yta[i] = ifelse(yta[i-1]<=0.5,-0.5*yta[i-1],0) + ifelse(yta[i-1]>0.5,0.9*yta[i-1],0) + rnorm(1, mean = 0, sd = 0.5)
   
 }
 
