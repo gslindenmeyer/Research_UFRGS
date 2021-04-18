@@ -1,4 +1,4 @@
-#set.seed(2506)
+set.seed(1305)
 t = 500
 
 yta = array(dim = t) ## Criação do vetor 1 linear
