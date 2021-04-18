@@ -70,13 +70,49 @@ linear_model = function(yt, xt, h, p, n_out=200){
   return(results_list)
 }
 
-catch_r2 = function(yt, h_max = 12, p_out=12, n_out_out=200,name = NULL){
-  vetor_h = c()
-  for(i in 1:h_max){
-    model <- linear_model(yt, h=i,p=p_out, n_out = n_out_out)
-    x = ifelse(model$r2 > 0, model$r2,0)
-    vetor_h = c(vetor_h, x)
+best_linear_model = function(yt, xt, n_out_out){
+  pb <- txtProgressBar(min = 0, max = 12, style = 3)
+  
+  df_linear_estimate = data.frame(lag_1 = NA, lag_2=NA, lag_3 = NA, lag_4 = NA, lag_5 = NA, lag_6=NA, 
+                                  lag_7 = NA, lag_8 = NA,lag_9 = NA, lag_10=NA, lag_11 = NA, lag_12 = NA)
+  df_best_linear = data.frame(lag_1 = NA, lag_2=NA, lag_3 = NA, lag_4 = NA, lag_5 = NA, lag_6=NA, 
+                              lag_7 = NA, lag_8 = NA,lag_9 = NA, lag_10=NA, lag_11 = NA, lag_12 = NA)
+  for(j in 1:12){
+    #progress(j, max.value = 12, progress.bar = T)
+    for(i in 1:12){
+      model = linear_model(yt=yt,h=i, p=j, n_out = n_out_out)
+      df_linear_estimate[i,j] <- mean(model$aic)
+      df_best_linear[i,j] <- mean(model$r2)}
+    setTxtProgressBar(pb, j)
+    if (j==12) cat(" Done!\n")
   }
-  a = list('vetor_h' = vetor_h, 'h'=1:h_max, 'lag' = p_out, 'n_predictions' = n_out_out, 'name' = name)
-  return(a)
+  result = list('p_linear_estimate' = as.integer(which.min(lapply(df_linear_estimate, mean))),
+                'p_best_linear' = as.integer(which.max(lapply(df_best_linear, mean))))
+  return(result)
 }
+
+catch_r2 = function(yt, h_max = 12, p_out=12, n_out_out=200,name = NULL, best=F){
+  vetor_h = c()
+  if(best){
+    best = best_linear_model(yt, n_out_out = n_out_out)
+    linear_estimate = catch_r2(yt, h_max = 12, p_out=best$p_linear_estimate, n_out_out=n_out_out,name = paste(name,"linear_estimate", sep = ""), best=F)
+    best_linear = catch_r2(yt, h_max = 12, p_out=best$p_best_linear, n_out_out=n_out_out,name = paste(name,"best_linear", sep = ""), best=F)
+    a = list('linear_estimate' = linear_estimate, 'best_linear'= best_linear)
+  } 
+  else{
+    pb <- txtProgressBar(min = 0, max = h_max, style = 3)
+    
+     for(i in 1:h_max){
+       model <- linear_model(yt, h=i,p=p_out, n_out = n_out_out)
+       x = ifelse(model$r2 > 0, model$r2,0)
+       vetor_h = c(vetor_h, x)
+       setTxtProgressBar(pb, i)
+       if (i==h_max) cat(" Done!\n")
+       
+     }
+     a = list('vetor_h' = vetor_h, 'h'=1:h_max, 'lag' = p_out, 'n_predictions' = n_out_out, 'name' = name)
+     
+   }
+  return(a)}
+
+
