@@ -881,7 +881,9 @@ r_squared <- function(X, Y){
 }
 
 
-
+mean_01 <- function(value) {
+  mean(value[value > 0.1])
+}
 
 
 
