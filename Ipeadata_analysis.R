@@ -605,50 +605,10 @@ for (i in 1:12) {
 }
 
 
-N1 = c()
-N2 = c()
-for (i in 1:12) {
-  ## Any of the splines method is best of linear cases
-  base = all_cases[[i]]
-  cut = base['linear'] > base['tsboost'] | base['linear'] > base['bspline']
-  
-  spl[i,'linear'] = mean(base[cut,'linear'])
-  spl[i,'bols'] = mean(base[cut,'bols'])
-  spl[i,'bspline'] = mean(base[cut,'bspline'])
-  spl[i,'tsboost'] = mean(base[cut,'tsboost'])
-  spl[i,'bspline2'] = mean(base[cut,'bspline2'])
-  spl[i,'tsboost2'] = mean(base[cut,'tsboost2'])
-  spl[i,'tree'] = mean(base[cut,'tree'])
-  
-  N1 = c(N1, sum(cut))
-  
-  ## Linear methods are better 
-  
-  cut = !(base['linear'] > base['tsboost'] | base['linear'] > base['bspline'])
-  
-  lin[i,'linear'] = mean(base[cut,'linear'])
-  lin[i,'bols'] = mean(base[cut,'bols'])
-  lin[i,'bspline'] = mean(base[cut,'bspline'])
-  lin[i,'tsboost'] = mean(base[cut,'tsboost'])
-  lin[i,'bspline2'] = mean(base[cut,'bspline2'])
-  lin[i,'tsboost2'] = mean(base[cut,'tsboost2'])
-  lin[i,'tree'] = mean(base[cut,'tree'])
-  
-  N2 = c(N2, sum(cut))
-  
-  
-  
-}
 
-sapply(lin, mean)
-sapply(lin1, mean)
+clipr::write_clip(t(all10))
+clipr::write_clip(t(all05))
 
-clipr::write_clip(t(all))
 
-clipr::write_clip(t(spl))
-clipr::write_clip(t(N1))
-
-clipr::write_clip(t(lin))
-clipr::write_clip(t(N2))
 
 
