@@ -15,8 +15,17 @@ require(mboost)
 require(R.matlab)
 require(forecast)
 require(sandwich)
+library(afmtools)
+library(readxl)
+library(dplyr)
+library(readr)
 # data <- readMat("FRED.mat")
 source("helper_functions_analysis.R")
+
+##
+library(ggplot2)
+library(ggthemes)
+library(paletteer)
 
 ## Dataset
 
@@ -610,5 +619,201 @@ clipr::write_clip(t(all10))
 clipr::write_clip(t(all05))
 
 
+### rRMSE as advisor requested
+
+M <- 300
+
+filenames <- list.files(paste("IPEAtests2", M, "/", sep = ""))
 
 
+linear <- rep(0, 140)
+bols <- rep(0, 140)
+bspline <- rep(0, 140)
+tsboost <- rep(0, 140)
+bspline2 <- rep(0, 140)
+tsboost2 <- rep(0, 140)
+tree  <- rep(0, 140)
+all_cases <- list()
+
+for (i in 1:12) {
+  all_cases[[i]] <- data.frame(linear, bols, bspline, tsboost, bspline2, tsboost2, tree)
+}
+for (h in 12) {
+  for (i in 1:length(filenames)) {
+    data_test <- readMat(paste("IPEAtests2", M, "/", filenames[i], sep = ""))
+    
+    
+    start <- data_test$test.data.start[1]
+    end <- tail(data_test$test.data.end, 1)
+    
+    
+    xt <- data_test$ar.pred[h, ] # linear
+    xt2 <- data_test$tsboost.pred[h, ] # tsboost
+    xt3 <- data_test$bspline.pred[h, ] # bspline
+    xt4 <- data_test$bols.pred[h, ] # bols
+    
+    xt5 <- data_test$bspline.noextra.pred[h,]
+    xt6 <- data_test$tsboost.noextra.pred[h,]
+    xt7 <- data_test$tree2.pred[h,]
+    
+    var <- data_test$const.pred[h, ] # for var
+    yt <- data_test$true.Ytph[h, ] # true value
+    
+    tl <- start:(end - h)
+    
+    
+    ind <- sqrt(mean((xt4[tl] - yt[tl])^2) )/
+      sqrt(mean((yt[tl] - xt[tl])^2))
+    all_cases[[h]][i, "bols"] <- ifelse(ind < 0, 0, ind)
+    
+    ind <- sqrt(mean((xt[tl] - yt[tl])^2)) /
+      sqrt(mean((yt[tl] - xt[tl])^2))
+    all_cases[[h]][i, "linear"] <- ifelse(ind < 0, 0, ind)
+    
+    ind <- sqrt(mean((xt3[tl] - yt[tl])^2) )/
+      sqrt(mean((yt[tl] - xt[tl])^2))
+    all_cases[[h]][i, "bspline"] <- ifelse(ind < 0, 0, ind)
+    
+    ind <- sqrt(mean((xt2[tl] - yt[tl])^2)) /
+      sqrt( mean((yt[tl] - xt[tl])^2))
+    all_cases[[h]][i, "tsboost"] <- ifelse(ind < 0, 0, ind)
+    
+    ind <- sqrt(mean((xt5[tl] - yt[tl])^2)) /
+      sqrt( mean((yt[tl] - xt[tl])^2))
+    all_cases[[h]][i, "bspline2"] <- ifelse(ind < 0, 0, ind)
+    
+    ind <- sqrt(mean((xt6[tl] - yt[tl])^2) )/
+      sqrt(mean((yt[tl] - xt[tl])^2))
+    
+    all_cases[[h]][i, "tsboost2"] <- ifelse(ind < 0, 0, ind)
+    
+    ind <- sqrt(mean((xt7[tl] - yt[tl])^2) )/
+      sqrt(  mean((yt[tl] - xt[tl])^2))
+    
+    all_cases[[h]][i, "tree"] <- ifelse(ind < 0, 0, ind)
+    
+  }
+}
+
+names <- pull(read_excel("dados.xlsx", sheet = "Planilha1", 
+                    col_names = FALSE))
+order <-  as.numeric(gsub("([0-9]+).*$", "\\1", (substr(filenames, 40, 42))))
+
+Series <- names[order]
+
+clipr::write_clip(cbind(Series,round(all_cases[[12]],3)))
+
+
+#### All the plots
+create_df = function (data, index, h){
+  result = data[[h]][index,]
+  
+  if(h>1){
+    for( i in 2:h){
+      result = rbind(result, data[[i]][index,])
+    }
+  }
+  
+  h = 1:h
+  return(cbind(result, h))  
+}
+
+filenames
+dataset$metadados$name
+
+
+plot_data = function (index_out, data, h =12) {
+  df = create_df(data = data, index = index_out, h =12)
+  col = paletteer_d("RColorBrewer::Paired", 7)
+  
+  return(plot <- ggplot(data = df, mapping = aes(x = h)) +
+    geom_line(aes(y = linear, color = col[1]), ) +
+    geom_point(aes(y = linear), shape = 21, colour = "black") +
+      
+    geom_line(aes(y = bols, color = col[2])) +
+    geom_point(aes(y = bols), shape = 21, colour = "black") +
+      
+    geom_line(aes(y = bspline, color = col[3])) +
+    geom_point(aes(y = bspline), shape = 21, colour = "black") +
+      
+    geom_line(aes(y = bspline2, color = col[4])) +
+    geom_point(aes(y = bspline2), shape = 21, colour = "black") +
+      
+    geom_line(aes(y = tsboost, color = col[5])) +
+    geom_point(aes(y = tsboost), shape = 21, colour = "black") +
+      
+    geom_line(aes(y = tsboost2, color = col[6])) +
+    geom_point(aes(y = tsboost2), shape = 21, colour = "black") +
+      
+    geom_line(aes(y = tree, color = col[8])) +
+    geom_point(aes(y = tree), shape = 21, colour = "black") +
+      
+      
+    ylab("R²") +
+    ggtitle(Series[index_out]) +
+    ylim(0, 1) + # scale_y_continuous(labels=as.character(seq(0,1, by=0.1)),breaks=seq(0,1, by=0.1)) +
+    scale_x_continuous(labels = as.character(df$h), breaks = df$h) +
+    theme_calc() + 
+    scale_colour_manual(values = col,name = "Models", labels = c("Linear", "BOLS",
+                                                     'BSpline', 'BSpline*', "TSBoost", 'TSBoost*','Tree')))
+
+}
+
+
+plot_data = function (index_out, data, h =12) {
+  df = create_df(data = data, index = index_out, h =12)
+  col = paletteer_d("RColorBrewer::Paired", 4)
+  
+  return(plot <- ggplot(data = df, mapping = aes(x = h)) +
+           geom_line(aes(y = linear, color = col[1]), ) +
+           geom_point(aes(y = linear), shape = 21, colour = "black") +
+           
+           geom_line(aes(y = bols, color = col[2])) +
+           geom_point(aes(y = bols), shape = 21, colour = "black") +
+           
+           
+           geom_line(aes(y = bspline, color = col[3])) +
+           geom_point(aes(y = bspline), shape = 21, colour = "black") +
+           
+           geom_line(aes(y = tsboost, color = col[5])) +
+           geom_point(aes(y = tsboost), shape = 21, colour = "black") +
+           
+           
+           ylab("R²") +
+           ggtitle(Series[index_out]) +
+           ylim(0, 1) + # scale_y_continuous(labels=as.character(seq(0,1, by=0.1)),breaks=seq(0,1, by=0.1)) +
+           scale_x_continuous(labels = as.character(df$h), breaks = df$h) +
+           theme_calc() + 
+           scale_colour_manual(values = col,name = "Models", labels = c("Linear", "BOLS",
+                                                                        'BSpline', "TSBoost")))
+  
+}
+cut = which_splines_superior(all_cases)
+
+myplots <- vector('list', length(cut))
+for(i in cut){
+  temp_plot <- plot_data(index_out = i, all_cases)
+  myplots[[i]] <- temp_plot
+  ggsave(temp_plot, path="plots4", filename = paste0('plot_', i, '.tiff'), width = 6, height = 4, units = "in")
+}
+
+which_splines_superior <- function(data_out){
+  vector = c()
+  for(i in 1:140){
+    temp <- create_df(data = data_out, i, 12)
+    condition = sum( ((temp[,'linear'] < temp[,'tsboost']) & (temp[,'linear'] < temp[,'bspline']))
+                     & ((temp[,'bols'] < temp[,'tsboost']) & (temp[,'bols'] < temp[,'bspline'])) )
+    if(condition>=9){
+      vector = c(vector, i)
+    }
+  }
+  return(vector)
+}
+
+
+cut = which_splines_superior(all_cases)
+
+for(i in cut){
+  temp_plot <- plot_data(index_out = i, all_cases)
+  ggsave(temp_plot, path="plots9", filename = paste0('plot_', i, '.tiff'), width = 6, height = 4, units = "in")
+}

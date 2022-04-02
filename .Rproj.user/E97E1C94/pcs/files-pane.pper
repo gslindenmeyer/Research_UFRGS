@@ -1,9 +1,9 @@
 {
-    "path" : "~/GitHub/Research_UFRGS",
-    "sortOrder" : [
+    "path": "~/GitHub/Research_UFRGS",
+    "sortOrder": [
         {
-            "ascending" : true,
-            "columnIndex" : 2
+            "ascending": true,
+            "columnIndex": 2
         }
     ]
 }
