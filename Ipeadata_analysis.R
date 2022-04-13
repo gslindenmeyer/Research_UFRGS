@@ -15,6 +15,8 @@ require(mboost)
 require(R.matlab)
 require(forecast)
 require(sandwich)
+require(gridExtra)
+library(ggpubr)
 library(afmtools)
 library(readxl)
 library(dplyr)
@@ -762,7 +764,7 @@ plot_data = function (index_out, data, h =12) {
 
 plot_data = function (index_out, data, h =12) {
   df = create_df(data = data, index = index_out, h =12)
-  col = paletteer_d("RColorBrewer::Paired", 4)
+  col = paletteer_d("RColorBrewer::Paired", 3)
   
   return(plot <- ggplot(data = df, mapping = aes(x = h)) +
            geom_line(aes(y = linear, color = col[1]), ) +
@@ -772,20 +774,22 @@ plot_data = function (index_out, data, h =12) {
            geom_point(aes(y = bols), shape = 21, colour = "black") +
            
            
-           geom_line(aes(y = bspline, color = col[3])) +
-           geom_point(aes(y = bspline), shape = 21, colour = "black") +
+         #  geom_line(aes(y = bspline, color = col[3])) +
+        #   geom_point(aes(y = bspline), shape = 21, colour = "black") +
            
-           geom_line(aes(y = tsboost, color = col[5])) +
-           geom_point(aes(y = tsboost), shape = 21, colour = "black") +
+        #   geom_line(aes(y = tsboost, color = col[4])) +
+        #   geom_point(aes(y = tsboost), shape = 21, colour = "black") +
            
+           geom_line(aes(y = tree, color = col[3])) +
+           geom_point(aes(y = tree), shape = 21, colour = "black") +
            
-           ylab("R²") +
            ggtitle(Series[index_out]) +
            ylim(0, 1) + # scale_y_continuous(labels=as.character(seq(0,1, by=0.1)),breaks=seq(0,1, by=0.1)) +
            scale_x_continuous(labels = as.character(df$h), breaks = df$h) +
-           theme_calc() + 
+           theme_excel_new() + xlab("h") + ylab("R²") + theme(axis.title=element_text(size=10)) +
            scale_colour_manual(values = col,name = "Models", labels = c("Linear", "BOLS",
-                                                                        'BSpline', "TSBoost")))
+                                                                        #'BSpline', "TSBoost",
+                                                                        "Tree")))
   
 }
 cut = which_splines_superior(all_cases)
@@ -801,8 +805,8 @@ which_splines_superior <- function(data_out){
   vector = c()
   for(i in 1:140){
     temp <- create_df(data = data_out, i, 12)
-    condition = sum( ((temp[,'linear'] < temp[,'tsboost']) & (temp[,'linear'] < temp[,'bspline']))
-                     & ((temp[,'bols'] < temp[,'tsboost']) & (temp[,'bols'] < temp[,'bspline'])) )
+    condition = sum( ((temp[,'linear'] < temp[,'tree']) & (temp[,'bols'] < temp[,'tree']))
+                     & ((temp[,'linear'] < temp[,'tree']) & (temp[,'bols'] < temp[,'tree'])) )
     if(condition>=9){
       vector = c(vector, i)
     }
@@ -811,9 +815,24 @@ which_splines_superior <- function(data_out){
 }
 
 
-cut = which_splines_superior(all_cases)
 
+
+cut = which_splines_superior(all_cases)
+myplots <- vector('list', length(cut))
+k=1
 for(i in cut){
   temp_plot <- plot_data(index_out = i, all_cases)
-  ggsave(temp_plot, path="plots9", filename = paste0('plot_', i, '.tiff'), width = 6, height = 4, units = "in")
+  myplots[[k]] <- temp_plot
+  k=k+1
+  ggsave(temp_plot, path="plots\\plots2", filename = paste0('plot_', i, '.tiff'), width = 6, height = 4, units = "in")
 }
+ggarrange(myplots[[3]],myplots[[6]], myplots[[7]],myplots[[8]], 
+          ncol = 2, nrow=2, common.legend = TRUE, legend="bottom")
+
+ggarrange(myplots[[1]],myplots[[2]], myplots[[3]],myplots[[4]], myplots[[5]],myplots[[6]], 
+          ncol = 2, nrow=3, common.legend = TRUE, legend="bottom")
+
+
+ggarrange(myplots[[7]],myplots[[8]], myplots[[11]],myplots[[9]], myplots[[13]],myplots[[14]], 
+          ncol = 2, nrow=3, common.legend = TRUE, legend="bottom")
+
