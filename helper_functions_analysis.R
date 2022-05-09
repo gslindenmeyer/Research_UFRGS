@@ -1,14 +1,8 @@
-#### empirical_functions.R
+#### Funcitions for the analysis
 #
-# Apufunktioita empirical_blocksoos skriptille
-#
-#### Changelog
-#
-# 2018-03-26 TimoV: Do the stationarity transform here
-# 2018-03-22 TimoV: Changelog
+# Adapted from Kauppi and Virtanen (2021)'s code
 #
 
-# Added saving of original Y_t
 data_to_frame <- function (yt, maxp, maxh, yeardata, monthdata, Xt, transform_id) {
   
   yt_stationary<-transform_singlestep(Xt,transform_id)
