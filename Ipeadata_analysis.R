@@ -36,7 +36,9 @@ load("data/dataset.RData")
 
 M <- 300
 
-filenames <- list.files(paste("IPEAtests2", M, "/", sep = ""))
+filenames <- list.files(paste("tests/IPEAtests2", M, "/", sep = ""))
+
+
 x <- c()
 
 tsboost <- c()
@@ -58,7 +60,7 @@ tree <- c()
 tree2 <- c()
 
 for (name in filenames) {
-  data_test <- readMat(paste("IPEAtests2", M, "/", name, sep = ""))
+  data_test <- readMat(paste("tests/IPEAtests2", M, "/", name, sep = ""))
   r_benchmark <- c()
   r_nonlinear <- c()
   tsboost_in <- c()
@@ -181,7 +183,7 @@ plot
 ### Average R² for out of sample forecasts. # 3 different cases, R² min = 0 and min = .1
 M <- 300
 
-filenames <- list.files(paste("IPEAtests2", M, "/", sep = ""))
+filenames <- list.files(paste("tests/IPEAtests2", M, "/", sep = ""))
 
 linear <- rep(0, 140)
 bols <- rep(0, 140)
@@ -198,7 +200,7 @@ for (i in 1:12) {
 
 for (h in 1:12) {
   for (i in 1:length(filenames)) {
-    data_test <- readMat(paste("IPEAtests2", M, "/", filenames[i], sep = ""))
+    data_test <- readMat(paste("tests/IPEAtests2", M, "/", filenames[i], sep = ""))
 
 
     start <- data_test$test.data.start[1]
@@ -373,7 +375,7 @@ clipr::write_clip(t(N5))
 
 M <- 300
 
-filenames <- list.files(paste("IPEAtests2", M, "/", sep = ""))
+filenames <- list.files(paste("tests/IPEAtests2", M, "/", sep = ""))
 
 linear <- rep(0, 140)
 bols <- rep(0, 140)
@@ -390,7 +392,7 @@ for (i in 1:12) {
 
 for (h in 1:12) {
   for (i in 1:length(filenames)) {
-    data_test <- readMat(paste("IPEAtests2", M, "/", filenames[i], sep = ""))
+    data_test <- readMat(paste("tests/IPEAtests2", M, "/", filenames[i], sep = ""))
     
     
     start <- data_test$test.data.start[1]
@@ -625,7 +627,7 @@ clipr::write_clip(t(all05))
 
 M <- 300
 
-filenames <- list.files(paste("IPEAtests2", M, "/", sep = ""))
+filenames <- list.files(paste("tests/IPEAtests2", M, "/", sep = ""))
 
 
 linear <- rep(0, 140)
@@ -642,7 +644,7 @@ for (i in 1:12) {
 }
 for (h in 12) {
   for (i in 1:length(filenames)) {
-    data_test <- readMat(paste("IPEAtests2", M, "/", filenames[i], sep = ""))
+    data_test <- readMat(paste("tests/IPEAtests2", M, "/", filenames[i], sep = ""))
     
     
     start <- data_test$test.data.start[1]

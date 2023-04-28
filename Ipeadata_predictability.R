@@ -23,15 +23,15 @@ source("helper_functions_analysis.R")
 ##############
 ## Dataset
 
-load("data/dataset.RData")
-dataset$na_2019 = append(dataset$na_2019,c(31,54,126)) # remendo
+load("data/datasetUntil2022.RData")
+#dataset$na_2019 = append(dataset$na_2019,c(31,54,126)) # remendo
 
 # Division of train/test
 train_startyear <- 1996 # 1996
 test_startyear <- 2014 # Def=1999
 
 # We do estimation by rounds. Roughly round = test_years / 12 and blocksize is 12
-estimation_rounds <- 6
+estimation_rounds <- 9
 test_blocksize <- 12
 
 # Minimum number of valid observations required for estimation
@@ -63,7 +63,7 @@ spline_bctrl <- boost_control(mstop = maxlearners)
 bols_bctrl <- boost_control(mstop = bols_maxlearners)
 
 
-save_directory <- paste("IPEAtests2", mstop, "/", sep = "") # Add / to end or leave empty!
+save_directory <- paste("IPEAtestsCOVID_Until2022_M_", mstop, "/", sep = "") # Add / to end or leave empty!
 
 
 # Preparations
@@ -76,12 +76,13 @@ if (estimation_rounds == 1) {
 }
 
 # Which series to forecast
-#series <- c(1:47)
+series <- c(25)
 #series <- c(48:95)
-series <- c(92:95)
+#series <- c(92:95)
 ##############
 ## The loop ##
 ##############
+
 loop_continue <- 1
 
 ts <- series[1]

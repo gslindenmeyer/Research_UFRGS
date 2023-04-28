@@ -18,7 +18,7 @@ library(tseries)
 ##############################
 # 1 - Source file
 ##############################
-dataPath <- "C:/Users/guili/Documents/GitHub/Research_UFRGS/data/"
+dataPath <- "C:/Users/crist/Documents/GitHub/Research_UFRGS/data/"
 myfiles <- list.files(paste0(dataPath, "code_data"))
 dataset <- read_excel("data/code_master2.xlsx",
   col_types = c(
@@ -33,7 +33,6 @@ source(paste0(dataPath, "helper_functions.R"))
 
 ## Acquiring the metadata from each CODE
 metadados <- metadata(dataset$codigo)
-
 ## Acquiring the values from each CODE
 data <- ipeadata(metadados$code)
 
@@ -46,13 +45,15 @@ df <- data %>%
 df_sorted <- df[order(as.Date(df$date, format = "%Y/%m/%d")), ]
 
 ## Filtering by dates
-df_filtered <- subset(df_sorted, date >= as.Date("1996-01-01") & date < as.Date("2020-01-01"))
-
+df_filtered <- subset(df_sorted, date >= as.Date("1996-01-01") & date < as.Date("2023-01-01"))
+df_filtered <- df_filtered  %>% select_if(~ !any(is.na(.)))
+#df_filtered2 <- subset(df_sorted, date >= as.Date("1996-01-01") & date < as.Date("2020-01-01"))
 
 
 ## We want to know how to make the data set stationary using ADF Test ##
 
-non_stationary <- df_filtered
+non_stationary <-  df_filtered 
+
 
 ## Identifying the columns
 tipo <- c(4)
@@ -64,7 +65,7 @@ for (i in 2:ncol(non_stationary)) {
 
       tipo <- append(tipo, 3) # negative and zero
     } else {
-      if (sum(non_stationary[, i] < 0, na.rm = T) == length(non_stationary[, i])) {
+      if (sum(non_stationary[, i] < 0, na.rm = T) == dim(non_stationary[, i])[1]) {
         tipo <- append(tipo,5) # only negative values
       } else {
       tipo <- append(tipo, 1) }# some negative values
@@ -139,12 +140,16 @@ for (i in 2:ncol(non_stationary)) {
     transformation[i] <- 4
   } else if (tipo[i] == 0 && test[i] == 1) {
     transformation[i] <- 5
+  } else if (tipo[i] == 0 && test[i] == 0.5) {
+    transformation[i] <- 2
   } else if (tipo[i] == 0 && test[i] == 2) {
     transformation[i] <- 6
   } else if (tipo[i] == 1 && test[i] == 0) {
     transformation[i] <- 1
   } else if (tipo[i] == 1 && test[i] == 1) {
     transformation[i] <- 2
+  } else if (tipo[i] == 1 && test[i] == 2) {
+    transformation[i] <- 3
   } else if (tipo[i] == 2 && test[i] == 0) {
     transformation[i] <- 1
   } else if (tipo[i] == 3 && test[i] == 0) {
@@ -162,20 +167,23 @@ month <- t(as.matrix(month(df_filtered$date)))
 year <- t(as.matrix(year(df_filtered$date)))
 reference <- available_subjects()
 metadados <- metadados %>% inner_join(reference)
-is_na_2019 <- as.vector(which(sapply(as.data.frame(is.na(df_filtered)), sum) != 0))
+
+#as in 2.09.2023
+nome <- names(df_filtered[2:ncol(df_filtered)])
+metadados <- metadados[metadados$code %in% nome,]
+
+#is_na_2019 <- as.vector(which(sapply(as.data.frame(is.na(df_filtered)), sum) != 0))
 
 dataset <- list(
   "data" = as.matrix(df_filtered[2:ncol(df_filtered)]),
   "transformation" = t(as.matrix(transformation[2:ncol(df_filtered)])),
-  month = month, year = year, "metadados" = metadados,
-  "na_2019" = is_na_2019
+  month = month, year = year, "metadados" = metadados#,
+  #"na_2019" = is_na_2019
 )
-dataset$names <- names(dataset$data)
+dataset$names <- names(as.data.frame(dataset$data))
 names(dataset$data) <- NULL
 
-save(dataset, file = paste0(dataPath, "dataset.RData"))
+save(dataset, file = paste0(dataPath, "datasetUntil2022.RData"))
 
 # library("writexl")
-write_xlsx(dataset$metadados, path = paste0(dataPath, "metadados.xlsx"))
-
-
+#write_xlsx(dataset$metadados, path = paste0(dataPath, "metadados.xlsx"))
