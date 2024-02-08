@@ -2,7 +2,7 @@
 
 ## Introduction 
 
-This is the repository of the paper: "Boosting and Predictability of Macroeconomic Variables: Evidence from Brazil" that was approved for publication at Springer Nature - Computational Economics.
+This is the repository of the paper: "[Boosting and Predictability of Macroeconomic Variables: Evidence from Brazil](https://link.springer.com/article/10.1007/s10614-023-10421-3)" that was published open access at Springer Nature - Computational Economics.
 
 If you're interested in our results, we will guide you on the folder structure. If you have any questions, feel free to reach me via email [here](mailto:gslindenmeyer@gmail.com). 
 
